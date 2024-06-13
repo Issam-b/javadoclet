@@ -10,24 +10,21 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Markdown 形式のデータを出力します。
+ * Outputs data in Markdown format.
  */
 public class MarkdownWriter {
 
 	/**
-	 * Markdown の出力行の情報
+	 * Markdown output line information
 	 */
 	List<String> lines = new ArrayList<String>();
 
 	/**
-	 * 表紙の情報を出力します。
+	 * Outputs the cover information.
 	 *
-	 * @param title
-	 *            題名
-	 * @param author
-	 *            作成者
-	 * @param date
-	 *            日付
+	 * @param title Title
+	 * @param author Author
+	 * @param date date
 	 */
 	public void cover(String title, String author, String date) {
 		lines.add(0, "% " + markdown(date));
@@ -37,10 +34,9 @@ public class MarkdownWriter {
 	}
 
 	/**
-	 * レベル 1 の見出しを出力します。
+	 * Outputs level 1 headings.
 	 *
-	 * @param str
-	 *            見出しの文字列
+	 * @param str heading string
 	 */
 	public void heading1(String str) {
 		lines.add("# " + markdown(str));
@@ -48,10 +44,9 @@ public class MarkdownWriter {
 	}
 
 	/**
-	 * レベル 2 の見出しを出力します。
+	 * Outputs level 2 headings.
 	 *
-	 * @param str
-	 *            見出しの文字列
+	 * @param str heading string
 	 */
 	public void heading2(String str) {
 		lines.add("## " + markdown(str));
@@ -59,10 +54,9 @@ public class MarkdownWriter {
 	}
 
 	/**
-	 * レベル 3 の見出しを出力します。
+	 * Outputs level 3 headings.
 	 *
-	 * @param str
-	 *            見出しの文字列
+	 * @param str heading string
 	 */
 	public void heading3(String str) {
 		lines.add("### " + markdown(str));
@@ -70,10 +64,9 @@ public class MarkdownWriter {
 	}
 
 	/**
-	 * レベル 4 の見出しを出力します。
+	 * Outputs level 4 headings.
 	 *
-	 * @param str
-	 *            見出しの文字列
+	 * @param str heading string
 	 */
 	public void heading4(String str) {
 		lines.add("#### " + markdown(str));
@@ -81,10 +74,9 @@ public class MarkdownWriter {
 	}
 
 	/**
-	 * レベル 5 の見出しを出力します。
+	 * Outputs level 5 headings.
 	 *
-	 * @param str
-	 *            見出しの文字列
+	 * @param str heading string
 	 */
 	public void heading5(String str) {
 		lines.add("##### " + markdown(str));
@@ -92,32 +84,28 @@ public class MarkdownWriter {
 	}
 
 	/**
-	 * 順番なしリストを出力します。
+	 * Outputs an unordered list.
 	 *
-	 * @param str
-	 *            リストの内容
+	 * @param str list contents
 	 */
 	public void unorderedList(String str) {
 		lines.add("* " + markdown(str));
 	}
 
 	/**
-	 * 番号付きリストを出力します。
+	 * Print a numbered list.
 	 *
-	 * @param str
-	 *            リストの内容
+	 * @param str list contents
 	 */
 	public void orderedList(String str) {
 		lines.add("1. " + markdown(str));
 	}
 
 	/**
-	 * 定義リストを出力します。
+	 * Outputs the definition list.
 	 *
-	 * @param item
-	 *            定義の名前
-	 * @param term
-	 *            定義の内容
+	 * @param item definition name
+	 * @param term contents of definition
 	 */
 	public void definition(String item, String term) {
 		lines.add(markdown(item));
@@ -130,20 +118,18 @@ public class MarkdownWriter {
 	}
 
 	/**
-	 * 行単位の情報を出力します。
+	 * Outputs line-by-line information.
 	 *
-	 * @param str
-	 *            行単位の情報
+	 * @param str line-by-line information
 	 */
 	public void line(String str) {
 		lines.add(markdown(str) + "  ");
 	}
 
 	/**
-	 * テーブル行を出力します。
+	 * Print table rows.
 	 *
-	 * @param cols
-	 *            列の情報
+	 * @param cols column information
 	 */
 	public void columns(String... cols) {
 		StringBuilder sb = new StringBuilder();
@@ -156,22 +142,21 @@ public class MarkdownWriter {
 	}
 
 	/**
-	 * Markdown 要素の終了
+	 * Ending a Markdown element
 	 */
 	public void breakElement() {
 		lines.add("");
 	}
 
 	/**
-	 * Javadoc 情報を Markdown 形式の文字列に変換します。
+	 * Converts Javadoc information to a Markdown format string.
 	 *
-	 * @param str
-	 *            Javadoc 形式の文字列
-	 * @return Markdown 形式の文字列
+	 * @param str Javadoc format string
+	 * @return Markdown format string
 	 */
 	private String markdown(String str) {
 
-		// Javadoc インラインタグの Markdown 変換
+		// Markdown conversion of Javadoc inline tags
 		str = Pattern.compile("<code>(.*?)</code>").matcher(str).replaceAll("`$1`");
 		str = Pattern.compile("<i>(.*?)</i>").matcher(str).replaceAll("_$1_");
 		str = Pattern.compile("<em>(.*?)</em>").matcher(str).replaceAll("_$1_");
@@ -182,11 +167,11 @@ public class MarkdownWriter {
 		str = Pattern.compile("\\{@link +(.+?)\\}").matcher(str).replaceAll("[$1]($1)");
 		str = Pattern.compile("\\{@code +(.+?)\\}").matcher(str).replaceAll("`$1`");
 
-		// エスケープ
+		// escape
 		str = str.replaceAll("\\\\", "\\\\\\\\");
 		str = Pattern.compile("<(.*?)>").matcher(str).replaceAll("\\\\<$1\\\\>");
 
-		// エンティティ参照の復元
+		// Restore entity references
 		str = str.replaceAll("&lt;", "<");
 		str = str.replaceAll("&gt;", ">");
 		str = str.replaceAll("&quot;", "\"");
@@ -194,17 +179,15 @@ public class MarkdownWriter {
 		str = str.replaceAll("&nbsp;", " ");
 		str = str.replaceAll("&amp;", "&");
 
-		// 結果の返却
+		// Returning results
 		return str;
 	}
 
 	/**
-	 * Markdown ファイルを保存します。
+	 * Save the Markdown file.
 	 *
-	 * @param file
-	 *            ファイル名
-	 * @throws IOException
-	 *             例外
+	 * @param file file name
+	 * @throws IOException exception
 	 */
 	public void save(String file) throws IOException {
 		Writer writer = null;

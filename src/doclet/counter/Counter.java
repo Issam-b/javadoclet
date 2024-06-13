@@ -6,49 +6,49 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * ステップカウント処理を提供します。
+ * Provides step counting processing. Provides step counting processing.
  */
 public class Counter {
 
 	/**
-	 * ステップ数をカウントします。例外が発生した場合は null を返却します。
+	 * Count the number of steps. Returns null if an exception occurs.
 	 *
 	 * @param file
-	 *            対象ファイル
-	 * @return カウント情報
+	 *            Target file
+	 * @return Count information
 	 */
 	public static CountInfo count(File file) {
 
-		// カウント実行
+		// count execution
 		BufferedReader br = null;
 		try {
 
-			// カウンタ初期化
+			// Counter initialization
 			int lines = 0;
 			int steps = 0;
-			int branks = 0;
+			int blanks = 0;
 
-			// 行文字列
+			// row text column
 			String line;
 
-			// ブロックコメントフラグ初期化
+			// Block comment flag initialization
 			boolean comment = false;
 
-			// ファイルオープン
+			// file open
 			br = new BufferedReader(new FileReader(file));
 
-			// 全行を読み込み
+			// read all lines
 			while ((line = br.readLine()) != null) {
 
-				// 行数加算
+				// Add number of rows
 				lines++;
 
-				// 空白除去
+				// blank removal
 				line = line.trim();
 
-				// 有効行のカウント
+				// Valid row count
 				if (line.length() == 0) {
-					branks++;
+					blanks++;
 				} else {
 					if (line.startsWith("/*") && line.endsWith("*/")) {
 						comment = false;
@@ -64,13 +64,13 @@ public class Counter {
 				}
 			}
 
-			// カウント結果を返却
-			return new CountInfo(lines, steps, branks);
+			// Return count results
+			return new CountInfo(lines, steps, blanks);
 
 		} catch (IOException e) {
 		} finally {
 
-			// ファイルクローズ
+			// file close
 			if (br != null) {
 				try {
 					br.close();
@@ -79,7 +79,7 @@ public class Counter {
 			}
 		}
 
-		// エラーが発生した場合
+		// If an error occurs
 		return null;
 	}
 }

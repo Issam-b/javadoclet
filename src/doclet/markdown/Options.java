@@ -1,38 +1,35 @@
 package doclet.markdown;
 
 /**
- * 実行時オプションを格納するクラスです。
+ * A class that stores runtime options.
  */
 public class Options {
 
 	/**
-	 * Javadoc オプションの配列
+	 * Array of Javadoc options
 	 */
 	public static String[][] options;
 
 	/**
-	 * オプション文字列を取得します。
+	 * Get option string.
 	 * <p>
-	 * 該当するオプションが指定されていない場合は空文字列を返却します。
+	 * If the corresponding option is not specified, an empty string is returned.
 	 *
-	 * @param name
-	 *            オプション名
-	 * @return オプションの値
+	 * @param name option name
+	 * @return option value
 	 */
 	public static String getOption(String name) {
 		return getOption(name, "");
 	}
 
 	/**
-	 * オプション文字列を取得します。
+	 * Get option string.
 	 * <p>
-	 * 該当するオプションが指定されていない場合はデフォルト値を返却します。
+	 * If the corresponding option is not specified, the default value will be returned.
 	 *
-	 * @param name
-	 *            オプション名
-	 * @param defaultValue
-	 *            オプションが指定されていない場合に使用する値
-	 * @return オプションの値
+	 * @param name option name
+	 * @param defaultValue value to use if option is not specified
+	 * @return option value
 	 */
 	public static String getOption(String name, String defaultValue) {
 		for (int i = 0; i < options.length; i++) {
@@ -45,11 +42,10 @@ public class Options {
 	}
 
 	/**
-	 * 対応しているオプション名であるか判定します。
+	 * Determine whether the option name is supported.
 	 *
-	 * @param option
-	 *            オプション名
-	 * @return 対応しているオプション名の場合は true を返却します。
+	 * @param option option name
+	 * @return Returns true if the option name is supported.
 	 */
 	public static boolean isSupportedOption(String option) {
 		switch (option) {

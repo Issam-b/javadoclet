@@ -1,4 +1,4 @@
 /**
- * MarkdownDoclet のクラスを格納するパッケージです。
+ * This is a package that stores MarkdownDoclet classes.
  */
 package doclet.markdown;

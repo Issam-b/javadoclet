@@ -1,34 +1,31 @@
 package doclet.counter;
 
 /**
- * ステップカウント結果を保持するクラスです。
+ * This class holds step count results.
  */
 public class CountInfo {
 
 	/**
-	 * 行数
+	 * Number of lines
 	 */
 	private int lines;
 
 	/**
-	 * 有効行の数
+	 * Number of valid rows
 	 */
 	private int steps;
 
 	/**
-	 * 空白行の数
+	 * number of blank lines
 	 */
 	private int branks;
 
 	/**
-	 * コンストラクタです。
+	 * A constructor.
 	 *
-	 * @param lines
-	 *            行数
-	 * @param steps
-	 *            有効行の数
-	 * @param branks
-	 *            空白行の数
+	 * @param lines Number of lines
+	 * @param steps Number of valid rows
+	 * @param branks number of blank lines
 	 */
 	public CountInfo(int lines, int steps, int branks) {
 		this.lines = lines;
@@ -37,57 +34,54 @@ public class CountInfo {
 	}
 
 	/**
-	 * 行数を取得します。
+	 * Get the number of rows.
 	 *
-	 * @return 行数
+	 * @return Number of lines
 	 */
 	public int getLines() {
 		return lines;
 	}
 
 	/**
-	 * 行数を設定します。
+	 * Set the number of rows.
 	 *
-	 * @param lines
-	 *            行数
+	 * @param lines Number of lines
 	 */
 	public void setLines(int lines) {
 		this.lines = lines;
 	}
 
 	/**
-	 * 有効行の数を取得します。
+	 * Get the number of valid rows.
 	 *
-	 * @return 有効行の数
+	 * @return Number of valid rows
 	 */
 	public int getSteps() {
 		return steps;
 	}
 
 	/**
-	 * 有効行の数を設定します。
+	 * Set the number of valid rows.
 	 *
-	 * @param steps
-	 *            有効行の数
+	 * @param steps Number of valid rows
 	 */
 	public void setSteps(int steps) {
 		this.steps = steps;
 	}
 
 	/**
-	 * 空白行の数を取得します。
+	 * Get the number of blank lines.
 	 *
-	 * @return 空白行の数
+	 * @return number of blank lines
 	 */
 	public int getBranks() {
 		return branks;
 	}
 
 	/**
-	 * 空白行の数を設定します。
+	 * Sets the number of blank lines.
 	 *
-	 * @param branks
-	 *            空白行の数
+	 * @param branks number of blank lines
 	 */
 	public void setBranks(int branks) {
 		this.branks = branks;

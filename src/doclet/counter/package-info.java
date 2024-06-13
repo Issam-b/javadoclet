@@ -1,4 +1,4 @@
 /**
- * ステップカウント処理のクラスを格納するパッケージです。
+ * This is a package that stores classes for step count processing.
  */
 package doclet.counter;

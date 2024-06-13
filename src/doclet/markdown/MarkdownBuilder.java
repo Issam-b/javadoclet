@@ -30,76 +30,74 @@ import doclet.counter.CountInfo;
 import doclet.counter.Counter;
 
 /**
- * Markdown 形式の Javadoc ドキュメントを作成する処理を提供します。
+ * Provides processing for creating Javadoc documents in Markdown format.
  */
 public class MarkdownBuilder {
 
 	/**
-	 * Javadoc のルートドキュメント
+	 * Javadoc root document
 	 */
 	private RootDoc root;
 
 	/**
-	 * Markdown 出力
+	 * Markdown output
 	 */
 	private MarkdownWriter md;
 
 	/**
-	 * 出力済のパッケージを記憶するためのリスト
+	 * List for remembering output packages
 	 */
 	private List<PackageDoc> packages;
 
 	/**
-	 * ステップカウント結果を記憶するためのマップ
+	 * Map for storing step count results
 	 */
 	private Map<File, CountInfo> counts;
 
 	/**
-	 * コメントが指定されていない場合の表示文字列
+	 * Display string when no comment is specified
 	 */
-	private static final String NO_COMMENT = "説明がありません";
+	private static final String NO_COMMENT = "<There is no description>";
 
 	/**
-	 * ドキュメントを生成します。
+	 * Generate documentation.
 	 *
-	 * @param rootDoc
-	 *            Javadoc のルートドキュメント
-	 * @throws IOException
-	 *             例外
+	 * @param rootDoc Javadoc root document
+	 * @throws IOException exception
 	 */
 	public void create(RootDoc rootDoc) throws IOException {
 
-		// Javadoc のルートドキュメントを取得
+		// Get Javadoc root document
 		root = rootDoc;
 
-		// Markdown 出力を初期化
+		// Initialize Markdown output
 		md = new MarkdownWriter();
 
-		// 表紙を作成
+		// Create a cover
 		makeCoverPage();
 
-		// 出力済パッケージリストを初期化
+		// Initialize output package list
 		packages = new ArrayList<PackageDoc>();
 
-		// ステップカウント結果を初期化
+		// Initialize step count results
 		counts = new HashMap<File, CountInfo>();
 
-		// 全てのクラスを出力
+		// Output all classes
 		makeClassPages();
 
-		// ステップカウント結果を出力
+		// Output step count results
 		makeCountPage();
 
-		// ファイルに保存
+		// save to file
 		md.save(Options.getOption("file", "document.md"));
 	}
 
 	/**
-	 * 表紙を作成します。
+	 * Create a cover.
 	 */
 	private void makeCoverPage() {
 
-		// 題名の情報
+		// Title information
 		String title = Options.getOption("title");
 		if (!Options.getOption("subtitle").isEmpty()) {
 			if (!title.isEmpty()) {
@@ -114,27 +112,25 @@ public class MarkdownBuilder {
 			title += Options.getOption("version");
 		}
 
-		// 作成者の情報
+		// Author information
 		String company = Options.getOption("company");
 
-		// 日付を取得
-		Locale locale = new Locale("ja", "JP", "JP");
+		// get date
+		Locale locale = new Locale("en", "US", "US");
 		Calendar cal = Calendar.getInstance(locale);
-		DateFormat jformat = new SimpleDateFormat("GGGGy年M月d日", locale);
+		DateFormat jformat = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss", locale);
 		String stamp = jformat.format(cal.getTime());
 
-		// 表紙の情報を出力
+		// Output cover information
 		md.cover(title, company, stamp);
 	}
 
 	/**
-	 * 実行メソッドの引数の書式を文字列で取得します。
+	 * Gets the format of the execution method argument as a string.
 	 *
-	 * @param parameters
-	 *            引数の情報
-	 * @param type
-	 *            クラス名を表示する場合
-	 * @return 引数の書式を示した文字列
+	 * @param parameters Argument information
+	 * @param type When displaying the class name
+	 * @return A string indicating the format of the argument
 	 */
 	private String getParamSignature(Parameter[] parameters, boolean type) {
 		StringBuilder sb = new StringBuilder();
@@ -152,13 +148,11 @@ public class MarkdownBuilder {
 	}
 
 	/**
-	 * パラメタに設定されたコメントを取得します。
+	 * Gets the comment set in the parameter.
 	 *
-	 * @param tags
-	 *            タグ情報
-	 * @param name
-	 *            パラメタ名
-	 * @return コメント情報
+	 * @param tags Tag information
+	 * @param name Parameter name
+	 * @return Comment information
 	 */
 	private String getParamComment(ParamTag[] tags, String name) {
 		for (ParamTag tag : tags) {
@@ -170,13 +164,11 @@ public class MarkdownBuilder {
 	}
 
 	/**
-	 * 例外に設定されたコメントを取得します。
+	 * Gets the comment set in the exception.
 	 *
-	 * @param tags
-	 *            タグ情報
-	 * @param name
-	 *            例外クラスの名前
-	 * @return コメント情報
+	 * @param tags Tag information
+	 * @param name exception class name
+	 * @return Comment information
 	 */
 	private String getThrowsComment(ThrowsTag[] tags, String name) {
 		for (ThrowsTag tag : tags) {
@@ -188,63 +180,63 @@ public class MarkdownBuilder {
 	}
 
 	/**
-	 * 全てのクラスの情報を出力します。
+	 * Outputs information for all classes.
 	 */
 	private void makeClassPages() {
 
-		// 全てのクラス
+		// all classes
 		for (ClassDoc classDoc : root.classes()) {
 
-			// パッケージ
+			// package
 			PackageDoc packageDoc = classDoc.containingPackage();
 
-			// 新たなパッケージの場合
+			// For new packages
 			if (!packages.contains(packageDoc)) {
 
-				// パッケージ名
-				md.heading1(packageDoc.name() + " パッケージ");
+				// Package name
+				md.heading1(packageDoc.name() + " package");
 
-				// パッケージ説明
+				// Package description
 				print(getText(packageDoc.commentText(), NO_COMMENT));
 
-				// 出力済パッケージに追加
+				// Add to output package
 				packages.add(packageDoc);
 			}
 
-			// 種類名
+			// Type name
 			String classType;
 			if (classDoc.isInterface()) {
-				classType = "インターフェイス";
+				classType = "interface";
 			} else {
 				if (classDoc.isAbstract()) {
-					classType = "抽象クラス";
+					classType = "abstract class";
 				} else {
-					classType = "クラス";
+					classType = "class";
 				}
 			}
 
-			// クラス
+			// class
 			md.heading2(classDoc.modifiers() + " " + classDoc.name() + " " + classType);
 
-			// クラス説明
+			// class description
 			print(getText(classDoc.commentText(), NO_COMMENT));
 
-			// パッケージ名
-			md.heading3("パッケージ");
+			// package name
+			md.heading3("Package");
 			md.unorderedList(classDoc.containingPackage().name());
 			md.breakElement();
 
-			// ソースコードファイル情報
+			// Source code file information
 			File source = classDoc.position().file();
 			CountInfo ci = Counter.count(source);
 			if (ci != null) {
-				md.heading3("ファイル");
-				md.unorderedList(String.format("%s - %,d ステップ %,d 行", source.getName(), ci.getSteps(), ci.getLines()));
+				md.heading3("File");
+				md.unorderedList(String.format("%s - %,d source code lines and %,d lines in total", source.getName(), ci.getSteps(), ci.getLines()));
 				md.breakElement();
 			}
 			counts.put(source, ci);
 
-			// 継承階層
+			// inheritance hierarchy
 			List<ClassDoc> classDocs = new ArrayList<ClassDoc>();
 			classDocs.add(classDoc);
 			ClassDoc d = classDoc.superclass();
@@ -253,7 +245,7 @@ public class MarkdownBuilder {
 				d = d.superclass();
 			}
 			if (2 <= classDocs.size()) {
-				md.heading3("すべての継承されたクラス階層");
+				md.heading3("All inherited class hierarchies");
 				Collections.reverse(classDocs);
 				for (int i = 0; i < classDocs.size(); i++) {
 					md.orderedList(classDocs.get(i).qualifiedName());
@@ -261,57 +253,57 @@ public class MarkdownBuilder {
 				md.breakElement();
 			}
 
-			// インターフェイス
+			// interface
 			if (0 < classDoc.interfaces().length) {
-				md.heading3("すべての実装されたインタフェース");
+				md.heading3("All Implemented Interfaces");
 				for (int i = 0; i < classDoc.interfaces().length; i++) {
 					md.unorderedList(classDoc.interfaces()[i].qualifiedName());
 				}
 				md.breakElement();
 			}
 
-			// バージョン
+			// version
 			Tag[] versionTags = classDoc.tags("version");
 			if (0 < versionTags.length) {
-				md.heading3("バージョン");
+				md.heading3("Version");
 				for (int i = 0; i < versionTags.length; i++) {
 					md.unorderedList(versionTags[i].text());
 				}
 				md.breakElement();
 			}
 
-			// 作成者
+			// Author
 			Tag[] authorTags = classDoc.tags("author");
 			if (0 < authorTags.length) {
-				md.heading3("作成者");
+				md.heading3("Author");
 				for (int i = 0; i < authorTags.length; i++) {
 					md.unorderedList(authorTags[i].text());
 				}
 				md.breakElement();
 			}
 
-			// 全ての定数
+			// all constants
 			if (0 < classDoc.enumConstants().length) {
-				md.heading4("定数の詳細");
+				md.heading4("Constant details");
 				for (int i = 0; i < classDoc.enumConstants().length; i++) {
 					writeFieldDoc(classDoc.enumConstants()[i]);
 				}
 			}
 
-			// 全てのフィールド
+			// all fields
 			if (0 < classDoc.fields().length) {
-				md.heading4("フィールドの詳細");
+				md.heading4("Details of the field");
 				for (int i = 0; i < classDoc.fields().length; i++) {
 					writeFieldDoc(classDoc.fields()[i]);
 				}
 			}
 
-			// 全てのコンストラクタ
+			// all constructors
 			for (int i = 0; i < classDoc.constructors().length; i++) {
 				writeMemberDoc(classDoc.constructors()[i]);
 			}
 
-			// 全てのメソッド
+			// all methods
 			for (int i = 0; i < classDoc.methods().length; i++) {
 				writeMemberDoc(classDoc.methods()[i]);
 			}
@@ -319,47 +311,45 @@ public class MarkdownBuilder {
 	}
 
 	/**
-	 * 全てのフィールドの情報を出力します。
+	 * Outputs information for all fields.
 	 *
-	 * @param doc
-	 *            メンバ情報
+	 * @param doc member information
 	 */
 	private void writeFieldDoc(MemberDoc doc) {
 
-		// 種類名
+		// Type name
 		String fieldType;
 		if (doc.isEnumConstant()) {
-			fieldType = "列挙型定数";
+			fieldType = "enum constant";
 		} else if (doc.isEnum()) {
-			fieldType = "列挙型";
+			fieldType = "enumeration type";
 		} else {
-			fieldType = "フィールド";
+			fieldType = "field";
 		}
 
-		// フィールド情報
+		// field information
 		md.heading5(doc.modifiers() + " " + getShortName(((FieldDoc) doc).type()) + " " + doc.name() + " " + fieldType);
 		print(getText(doc.commentText(), NO_COMMENT));
 	}
 
 	/**
-	 * 全ての実行可能メンバの情報を出力します。
+	 * Outputs information about all executable members.
 	 *
-	 * @param doc
-	 *            実行可能メンバの情報
+	 * @param doc Executable member information
 	 */
 	private void writeMemberDoc(ExecutableMemberDoc doc) {
 
-		// 種類名
+		// Type name
 		String memberType;
 		if (doc.isConstructor()) {
-			memberType = "コンストラクタ";
+			memberType = "constructor";
 		} else if (doc.isMethod()) {
-			memberType = "メソッド";
+			memberType = "method";
 		} else {
-			memberType = "メンバ";
+			memberType = "member";
 		}
 
-		// メソッド情報
+		// Method information
 		String str = doc.modifiers();
 		if (doc instanceof MethodDoc) {
 			str += " " + getShortName(((MethodDoc) doc).returnType());
@@ -368,28 +358,28 @@ public class MarkdownBuilder {
 		md.heading4(str);
 		print(getText(doc.commentText(), NO_COMMENT));
 
-		// パラメータ
+		// parameters
 		Parameter[] parameters = doc.parameters();
 		if (0 < parameters.length) {
 			for (int i = 0; i < parameters.length; i++) {
-				md.heading5(getShortName(parameters[i].type()) + " " + parameters[i].name() + " パラメータ");
+				md.heading5(getShortName(parameters[i].type()) + " " + parameters[i].name() + " parameters");
 				print(getText(getParamComment(doc.paramTags(), parameters[i].name()), NO_COMMENT));
 			}
 		}
 
-		// 戻り値
+		// Return value
 		if (doc instanceof MethodDoc) {
 			MethodDoc method = (MethodDoc) doc;
 			if (0 < method.tags("return").length) {
-				md.heading5("戻り値");
+				md.heading5("Return value");
 				print(method.tags("return")[0].text());
 			}
 		}
 
-		// 例外
+		// exception
 		Type[] exceptions = doc.thrownExceptionTypes();
 		if (0 < exceptions.length) {
-			md.heading5("例外");
+			md.heading5("Exception");
 			for (int i = 0; i < exceptions.length; i++) {
 				md.definition(getShortName(exceptions[i]),
 						getText(getThrowsComment(doc.throwsTags(), exceptions[i].typeName()), NO_COMMENT));
@@ -398,43 +388,40 @@ public class MarkdownBuilder {
 	}
 
 	/**
-	 * Javadoc の内容を Markdown 形式で出力します。
+	 * Outputs Javadoc content in Markdown format.
 	 *
-	 * @param str
-	 *            Javadoc の内容
+	 * @param str Javadoc content
 	 */
 	private void print(String str) {
 
-		// 段落ごとに処理
+		// Process each paragraph
 		String[] paragraphs = str.split("\\s*<(p|P)>\\s*");
 		for (int i = 0; i < paragraphs.length; i++) {
 
-			// 改行の結合
+			// Combining line breaks
 			paragraphs[i] = paragraphs[i].replaceAll("\\s*[\\r\\n]+\\s*", " ");
 
-			// 行ごとに改行を挿入
+			// Insert line break after each line
 			paragraphs[i] = paragraphs[i].replaceAll("\\.\\s+", ".\n");
 			paragraphs[i] = paragraphs[i].replaceAll("。\\s*", "。\n");
 
-			// 改行ごとに処理
+			// Process every line break
 			String[] lines = paragraphs[i].split("\n");
 			for (int j = 0; j < lines.length; j++) {
 				md.line(lines[j]);
 			}
 
-			// Markdown 要素の終了
+			// Ending a Markdown element
 			md.breakElement();
 		}
 	}
 
 	/**
-	 * 指定された文字列が空の場合はデフォルト文字列を返します。
+	 * Returns the default string if the specified string is empty.
 	 *
-	 * @param str
-	 *            文字列
-	 * @param def
-	 *            デフォルト文字列
-	 * @return 選択された文字列
+	 * @param str string
+	 * @param def default string
+	 * @return selected string
 	 */
 	private String getText(String str, String def) {
 		if (str == null || str.isEmpty()) {
@@ -444,11 +431,10 @@ public class MarkdownBuilder {
 	}
 
 	/**
-	 * クラス名からパッケージ名を除去します。
+	 * Removes the package name from the class name.
 	 *
-	 * @param type
-	 *            クラス
-	 * @return 省略したクラス名
+	 * @param type class
+	 * @return abbreviated class name
 	 */
 	private String getShortName(Type type) {
 		String name = type.toString();
@@ -457,28 +443,28 @@ public class MarkdownBuilder {
 	}
 
 	/**
-	 * ステップカウント結果ページを出力します。
+	 * Outputs the step count result page.
 	 */
 	private void makeCountPage() {
 
-		// 合計値の初期化
+		// Initialize total value
 		int count = 0;
 		long sumSize = 0;
 		int sumSteps = 0;
 		int sumBranks = 0;
 		int sumLines = 0;
 
-		// パッケージ名
-		md.heading1("ファイル一覧");
+		// package name
+		md.heading1("Source Code Statistics");
 
-		// テーブルヘッダ
-		md.columns("ファイル", "bytes", "ステップ", "空白行", "行数");
+		// table header
+		md.columns("File", "Bytes", "Source code lines", "Blank lines", "Number of lines");
 		md.columns(":-----", "-----:", "-----:", "-----:", "-----:");
 
-		// 対象ファイルが存在する場合
+		// If the target file exists
 		if (0 < counts.size()) {
 
-			// ファイルリスト生成 (ファイル名順)
+			// File list generation (file name order)
 			List<File> files = new ArrayList<File>(counts.keySet());
 			Collections.sort(files, new Comparator<File>() {
 				@Override
@@ -487,38 +473,38 @@ public class MarkdownBuilder {
 				}
 			});
 
-			// ファイル一覧の出力
+			// File list output
 			for (File file : files) {
 
-				// ファイル情報
+				// File information
 				long size = file.length();
 				int steps = counts.get(file).getSteps();
 				int branks = counts.get(file).getBranks();
 				int lines = counts.get(file).getLines();
 
-				// 合計値の加算
+				// Adding the total value
 				count++;
 				sumSize += size;
 				sumSteps += steps;
 				sumBranks += branks;
 				sumLines += lines;
 
-				// ファイル情報
-				md.columns(file.getName(), // ファイル
-						String.format("%,d", size), // サイズ
-						String.format("%,d", steps), // ステップ
-						String.format("%,d", branks), // 空白行
-						String.format("%,d", lines) // 行数
+				// File information
+				md.columns(file.getName(), // file
+						String.format("%,d", size), // size
+						String.format("%,d", steps), // step
+						String.format("%,d", branks), // blank line
+						String.format("%,d", lines) // Number of lines
 				);
 			}
 		}
 
-		// 合計行
-		md.columns(String.format("計 %,d ファイル", count), // ファイル数
-				String.format("%,d", sumSize), // サイズ
-				String.format("%,d", sumSteps), // ステップ
-				String.format("%,d", sumBranks), // 空白行
-				String.format("%,d", sumLines) // 行数
+		// total line
+		md.columns(String.format("Total %,d files", count), // number of files
+				String.format("%,d", sumSize), // size
+				String.format("%,d", sumSteps), // step
+				String.format("%,d", sumBranks), // blank line
+				String.format("%,d", sumLines) // Number of lines
 		);
 		md.breakElement();
 	}

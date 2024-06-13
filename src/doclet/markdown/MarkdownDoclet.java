@@ -5,18 +5,18 @@ import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 
 /**
- * Markdown 形式の Javadoc ドキュメントを作成するドックレットです。
+ * A doclet that creates Javadoc documents in Markdown format.
  */
 public class MarkdownDoclet extends Doclet {
 
 	/**
-	 * Javadoc 生成処理を実行します。
+	 * Executes Javadoc generation processing.
 	 * <p>
-	 * 実行すると Javadoc 情報を Markdown ファイルとして生成します。 既に同名のファイルが存在する場合は上書きされます。
+	 * When executed, Javadoc information is generated as a Markdown file. 
+	 * If a file with the same name already exists, it will be overwritten.
 	 *
-	 * @param rootDoc
-	 *            Javadoc のルートドキュメント
-	 * @return 実行結果を真偽値で返却します。
+	 * @param rootDoc Javadoc root document
+	 * @return Returns the execution result as a boolean value.
 	 */
 	public static boolean start(RootDoc rootDoc) {
 		MarkdownBuilder creator = new MarkdownBuilder();
@@ -31,11 +31,10 @@ public class MarkdownDoclet extends Doclet {
 	}
 
 	/**
-	 * オプションの引数の個数を返却します。
+	 * Returns the number of optional arguments.
 	 *
-	 * @param option
-	 *            オプション名
-	 * @return 対応する引数自身を含むパラメタの個数
+	 * @param option option name
+	 * @return Number of parameters including the corresponding argument itself
 	 */
 	public static int optionLength(String option) {
 		if (Options.isSupportedOption(option)) {
@@ -45,9 +44,9 @@ public class MarkdownDoclet extends Doclet {
 	}
 
 	/**
-	 * 対応する Java バージョンを指定します。
+	 * Specify the corresponding Java version.
 	 *
-	 * @return 対応する Java バージョン
+	 * @return Supported Java version
 	 */
 	public static LanguageVersion languageVersion() {
 		return LanguageVersion.JAVA_1_5;
