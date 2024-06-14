@@ -348,10 +348,8 @@ public class MarkdownBuilder {
 		if (0 < parameters.length) {
 			for (int i = 0; i < parameters.length; i++) {
 				String paramText = getText(getParamComment(doc.paramTags(), parameters[i].name()), "");
-				if (!paramText.isEmpty()) {
-					md.heading5(getShortName(parameters[i].type()) + " " + parameters[i].name());
-					print(paramText);
-				}
+				if (!paramText.isEmpty())
+					print("__`" + getShortName(parameters[i].type()) + " " + parameters[i].name() + "`:__ " + paramText);
 			}
 		}
 
@@ -359,17 +357,15 @@ public class MarkdownBuilder {
 		if (doc instanceof MethodDoc) {
 			MethodDoc method = (MethodDoc) doc;
 			if (0 < method.tags("return").length) {
-				md.heading5("Return value");
-				print(method.tags("return")[0].text());
+				print("__Returns__ " + method.tags("return")[0].text());
 			}
 		}
 
 		// exception
 		Type[] exceptions = doc.thrownExceptionTypes();
 		if (0 < exceptions.length) {
-			md.heading5("Exception");
 			for (int i = 0; i < exceptions.length; i++) {
-				md.definition(getShortName(exceptions[i]),
+				md.definition("Exception `" + getShortName(exceptions[i]) + "`",
 						getText(getThrowsComment(doc.throwsTags(), exceptions[i].typeName()), NO_COMMENT));
 			}
 		}

@@ -108,12 +108,14 @@ public class MarkdownWriter {
 	 * @param term contents of definition
 	 */
 	public void definition(String item, String term) {
-		lines.add(markdown(item));
-		if (!term.isEmpty()) {
-			lines.add(":   " + markdown(term));
-		} else {
-			lines.add(":   " + "(undef)");
-		}
+		String defString;
+		if (!term.isEmpty())
+			defString = markdown(term);
+		else
+			defString = "(undef)";
+
+		lines.add("__" + markdown(item) + ":__ " + defString);
+
 		breakElement();
 	}
 
@@ -155,7 +157,6 @@ public class MarkdownWriter {
 	 * @return Markdown format string
 	 */
 	private String markdown(String str) {
-
 		// Markdown conversion of Javadoc inline tags
 		str = Pattern.compile("<code>(.*?)</code>").matcher(str).replaceAll("`$1`");
 		str = Pattern.compile("<i>(.*?)</i>").matcher(str).replaceAll("_$1_");
@@ -166,6 +167,9 @@ public class MarkdownWriter {
 		str = Pattern.compile("\\{@link +(.+?) +(.+?)\\}").matcher(str).replaceAll("[$2]($1)");
 		str = Pattern.compile("\\{@link +(.+?)\\}").matcher(str).replaceAll("[$1]($1)");
 		str = Pattern.compile("\\{@code +(.+?)\\}").matcher(str).replaceAll("`$1`");
+		str = Pattern.compile("</p>\\s+").matcher(str).replaceAll("\n");
+		str = Pattern.compile("<li>\\s*").matcher(str).replaceAll("1. ");
+		str = Pattern.compile("<\\/?ul>\\s*").matcher(str).replaceAll("");
 
 		// escape
 		str = str.replaceAll("\\\\", "\\\\\\\\");
