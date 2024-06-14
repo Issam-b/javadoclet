@@ -49,7 +49,7 @@ public class Options {
 	 */
 	public static boolean isSupportedOption(String option) {
 		switch (option) {
-		case "-file":
+		case "-output-dir":
 		case "-title":
 		case "-subtitle":
 		case "-version":

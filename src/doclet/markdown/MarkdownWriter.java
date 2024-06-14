@@ -1,6 +1,7 @@
 package doclet.markdown;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -193,20 +194,60 @@ public class MarkdownWriter {
 	 * @param file file name
 	 * @throws IOException exception
 	 */
-	public void save(String file) throws IOException {
+	public void save(String outputDirRoot, String version) throws IOException {
 		Writer writer = null;
+		String packageName = "";
+		String outputDir = "";
+		boolean hasApiChanges = false;
+
+		String apiDir = outputDirRoot + "/java-api-review-" + version;
+		new File(apiDir).mkdir();
+
 		try {
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
 			for (String line : lines) {
-				writer.write(line);
-				writer.write(System.lineSeparator());
+				if (line.startsWith("#class=")) {
+					String className = line.split("#class=")[1];
+					String outputFilename = outputDir + "/" + className + ".md";
+
+					if (writer != null)
+						writer.close();
+
+					writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "UTF-8"));
+					hasApiChanges = true;
+					continue;
+				} else if (line.startsWith("#package=")) { 
+					packageName = line.split("#package=")[1];
+					
+					outputDir = apiDir + "/" + packageName;
+					new File(outputDir).mkdir();
+
+					String outputFilename = outputDir + "/package.md";
+
+					if (writer != null)
+						writer.close();
+
+					writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "UTF-8"));
+					hasApiChanges = true;
+					continue;
+				} else if (line.startsWith("#statistics-section") && hasApiChanges) { 
+					outputDir = apiDir;
+					String outputFilename = outputDir + "/code-statistics.md";
+
+					if (writer != null)
+						writer.close();
+
+					writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "UTF-8"));
+					continue;
+				} else if (writer != null) {
+					writer.write(line);
+					writer.write(System.lineSeparator());
+				}
 			}
 		} finally {
 			if (writer != null) {
 				try {
 					writer.close();
-				} catch (Exception e) {
-				}
+				} catch (Exception e) { }
 			}
 		}
 	}

@@ -89,7 +89,8 @@ public class MarkdownBuilder {
 		makeCountPage();
 
 		// save to file
-		md.save(Options.getOption("file", "document.md"));
+		md.save(Options.getOption("output-dir", ""),
+				Options.getOption("version", ""));
 	}
 
 	/**
@@ -194,6 +195,7 @@ public class MarkdownBuilder {
 			if (!packages.contains(packageDoc)) {
 
 				// Package name
+				md.lines.add("#package=" +  packageDoc.name());
 				md.heading1(packageDoc.name() + " package");
 
 				// Package description
@@ -212,6 +214,7 @@ public class MarkdownBuilder {
 			}
 
 			// class
+			md.lines.add("#class=" +  classDoc.name());
 			md.heading2(classDoc.modifiers() + " " + classType + " " + classDoc.name());
 
 			// class description
@@ -439,6 +442,7 @@ public class MarkdownBuilder {
 		int sumLines = 0;
 
 		// package name
+		md.lines.add("#statistics-section");
 		md.heading1("Source Code Statistics");
 
 		// table header
