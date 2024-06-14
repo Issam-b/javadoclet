@@ -57,7 +57,7 @@ public class MarkdownBuilder {
 	/**
 	 * Display string when no comment is specified
 	 */
-	private static final String NO_COMMENT = "<There is no description>";
+	private static final String NO_COMMENT = "¯\\_(ツ)_/¯";
 
 	/**
 	 * Generate documentation.
@@ -208,15 +208,11 @@ public class MarkdownBuilder {
 			if (classDoc.isInterface()) {
 				classType = "interface";
 			} else {
-				if (classDoc.isAbstract()) {
-					classType = "abstract class";
-				} else {
-					classType = "class";
-				}
+				classType = "class";
 			}
 
 			// class
-			md.heading2(classDoc.modifiers() + " " + classDoc.name() + " " + classType);
+			md.heading2(classDoc.modifiers() + " " + classType + " " + classDoc.name());
 
 			// class description
 			print(getText(classDoc.commentText(), NO_COMMENT));
@@ -245,7 +241,7 @@ public class MarkdownBuilder {
 				d = d.superclass();
 			}
 			if (2 <= classDocs.size()) {
-				md.heading3("All inherited class hierarchies");
+				md.heading3("Inheritance Hierarchy");
 				Collections.reverse(classDocs);
 				for (int i = 0; i < classDocs.size(); i++) {
 					md.orderedList(classDocs.get(i).qualifiedName());
@@ -255,7 +251,7 @@ public class MarkdownBuilder {
 
 			// interface
 			if (0 < classDoc.interfaces().length) {
-				md.heading3("All Implemented Interfaces");
+				md.heading3("Implemented Interfaces");
 				for (int i = 0; i < classDoc.interfaces().length; i++) {
 					md.unorderedList(classDoc.interfaces()[i].qualifiedName());
 				}
@@ -292,7 +288,7 @@ public class MarkdownBuilder {
 
 			// all fields
 			if (0 < classDoc.fields().length) {
-				md.heading4("Details of the field");
+				md.heading4("Field details");
 				for (int i = 0; i < classDoc.fields().length; i++) {
 					writeFieldDoc(classDoc.fields()[i]);
 				}
@@ -338,23 +334,12 @@ public class MarkdownBuilder {
 	 * @param doc Executable member information
 	 */
 	private void writeMemberDoc(ExecutableMemberDoc doc) {
-
-		// Type name
-		String memberType;
-		if (doc.isConstructor()) {
-			memberType = "constructor";
-		} else if (doc.isMethod()) {
-			memberType = "method";
-		} else {
-			memberType = "member";
-		}
-
 		// Method information
 		String str = doc.modifiers();
 		if (doc instanceof MethodDoc) {
 			str += " " + getShortName(((MethodDoc) doc).returnType());
 		}
-		str += " " + doc.name() + " (" + getParamSignature(doc.parameters(), false) + ") " + memberType;
+		str += " " + doc.name() + "(" + getParamSignature(doc.parameters(), true) + ")";
 		md.heading4(str);
 		print(getText(doc.commentText(), NO_COMMENT));
 
@@ -362,8 +347,11 @@ public class MarkdownBuilder {
 		Parameter[] parameters = doc.parameters();
 		if (0 < parameters.length) {
 			for (int i = 0; i < parameters.length; i++) {
-				md.heading5(getShortName(parameters[i].type()) + " " + parameters[i].name() + " parameters");
-				print(getText(getParamComment(doc.paramTags(), parameters[i].name()), NO_COMMENT));
+				String paramText = getText(getParamComment(doc.paramTags(), parameters[i].name()), "");
+				if (!paramText.isEmpty()) {
+					md.heading5(getShortName(parameters[i].type()) + " " + parameters[i].name());
+					print(paramText);
+				}
 			}
 		}
 
