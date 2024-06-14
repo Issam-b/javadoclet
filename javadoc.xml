@@ -14,7 +14,7 @@
 			<doclet name="doclet.markdown.MarkdownDoclet" path="markdowndoclet-1.0.jar">
 				<param name="-file" value="sample/document.md" />
 				<param name="-title" value="MarkdownDoclet" />
-				<param name="-subtitle" value="詳細設計書" />
+				<param name="-subtitle" value="detailed design document" />
 				<param name="-version" value="1.0" />
 				<param name="-company" value="sample" />
 			</doclet>

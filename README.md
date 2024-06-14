@@ -1,5 +1,5 @@
 # MarkdownDoclet
-Doclet which creates Javadoc as Markdown file.
+Doclet which creates Javadoc as Markdown files for each class and package.
 Output of this doclet  is optimized for [Pandoc](http://pandoc.org/).
 
 ## How to use with javadoc
@@ -9,7 +9,7 @@ javadoc -sourcepath src \
     -doclet doclet.markdown.MarkdownDoclet \
     -docletpath ~/Downloads/markdowndoclet-1.0.jar \
     -title "Java API Docs" \
-    -file api-docs.md \
+    -output-dir api-docs.md \
     -version "1.0" \
     -company "Author Name" \
     com.package.name
