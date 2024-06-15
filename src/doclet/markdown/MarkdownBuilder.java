@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ExecutableMemberDoc;
@@ -57,7 +59,7 @@ public class MarkdownBuilder {
 	/**
 	 * Display string when no comment is specified
 	 */
-	private static final String NO_COMMENT = "¯\\_(ツ)_/¯";
+	private static final String NO_COMMENT = "[No description]";
 
 	/**
 	 * Generate documentation.
@@ -230,7 +232,17 @@ public class MarkdownBuilder {
 			CountInfo ci = Counter.count(source);
 			if (ci != null) {
 				md.heading3("File");
-				md.unorderedList(String.format("%s - %,d source code lines and %,d lines in total", source.getName(), ci.getSteps(), ci.getLines()));
+				
+				String qtRepoPattern = "\\/(qt\\w+\\/src\\/.+)";
+				String classPath = "";
+        		Matcher matcher = Pattern.compile(qtRepoPattern).matcher(source.getPath());
+				if (matcher.find())
+					classPath = matcher.group(1);
+				else
+					classPath = source.getName();
+
+				// md.unorderedList(String.format("%s - %,d source code lines and %,d lines in total", classPath, ci.getSteps(), ci.getLines()));
+				md.unorderedList(classPath);
 				md.breakElement();
 			}
 			counts.put(source, ci);
@@ -352,7 +364,7 @@ public class MarkdownBuilder {
 			for (int i = 0; i < parameters.length; i++) {
 				String paramText = getText(getParamComment(doc.paramTags(), parameters[i].name()), "");
 				if (!paramText.isEmpty())
-					print("__`" + getShortName(parameters[i].type()) + " " + parameters[i].name() + "`:__ " + paramText);
+					print("`" + getShortName(parameters[i].type()) + " " + parameters[i].name() + "`: " + paramText);
 			}
 		}
 
@@ -368,7 +380,7 @@ public class MarkdownBuilder {
 		Type[] exceptions = doc.thrownExceptionTypes();
 		if (0 < exceptions.length) {
 			for (int i = 0; i < exceptions.length; i++) {
-				md.definition("Exception `" + getShortName(exceptions[i]) + "`",
+				md.definition("__Exception__ `" + getShortName(exceptions[i]) + "`",
 						getText(getThrowsComment(doc.throwsTags(), exceptions[i].typeName()), NO_COMMENT));
 			}
 		}
@@ -414,7 +426,7 @@ public class MarkdownBuilder {
 		if (str == null || str.isEmpty()) {
 			return def;
 		}
-		return str;
+		return str.trim().replace("\n ", "\n");
 	}
 
 	/**

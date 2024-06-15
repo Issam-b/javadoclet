@@ -111,11 +111,11 @@ public class MarkdownWriter {
 	public void definition(String item, String term) {
 		String defString;
 		if (!term.isEmpty())
-			defString = markdown(term);
+			defString = markdown(term).trim();
 		else
 			defString = "(undef)";
 
-		lines.add("__" + markdown(item) + ":__ " + defString);
+		lines.add(markdown(item) + ": " + defString);
 
 		breakElement();
 	}
@@ -126,7 +126,7 @@ public class MarkdownWriter {
 	 * @param str line-by-line information
 	 */
 	public void line(String str) {
-		lines.add(markdown(str) + "  ");
+		lines.add(markdown(str));
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class MarkdownWriter {
 		str = Pattern.compile("<b>(.*?)</b>").matcher(str).replaceAll("__$1__");
 		str = Pattern.compile("<strong>(.*?)</strong>").matcher(str).replaceAll("__$1__");
 		str = Pattern.compile("<a href=\"(https?://.+?)\">(.+?)</a>").matcher(str).replaceAll("[$2]($1)");
-		str = Pattern.compile("\\{@link +(.+?) +(.+?)\\}").matcher(str).replaceAll("[$2]($1)");
+		str = Pattern.compile("\\{@link +([^,{}]+?) +([^,{}]+?)\\}").matcher(str).replaceAll("[$2]($1)");
 		str = Pattern.compile("\\{@link +(.+?)\\}").matcher(str).replaceAll("[$1]($1)");
 		str = Pattern.compile("\\{@code +(.+?)\\}").matcher(str).replaceAll("`$1`");
 		str = Pattern.compile("</p>\\s+").matcher(str).replaceAll("\n");
@@ -174,7 +174,7 @@ public class MarkdownWriter {
 
 		// escape
 		str = str.replaceAll("\\\\", "\\\\\\\\");
-		str = Pattern.compile("<(.*?)>").matcher(str).replaceAll("\\\\<$1\\\\>");
+		str = Pattern.compile("<(.*?)>").matcher(str).replaceAll("\\<$1\\>");
 
 		// Restore entity references
 		str = str.replaceAll("&lt;", "<");
