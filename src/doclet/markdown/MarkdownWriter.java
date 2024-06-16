@@ -229,16 +229,18 @@ public class MarkdownWriter {
 					writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "UTF-8"));
 					hasApiChanges = true;
 					continue;
-				} else if (line.startsWith("#statistics-section") && hasApiChanges) { 
-					outputDir = apiDir;
-					String outputFilename = outputDir + "/code-statistics.md";
+				} 
+				// else if (line.startsWith("#statistics-section") && hasApiChanges) { 
+				// 	outputDir = apiDir;
+				// 	String outputFilename = outputDir + "/code-statistics.md";
 
-					if (writer != null)
-						writer.close();
+				// 	if (writer != null)
+				// 		writer.close();
 
-					writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "UTF-8"));
-					continue;
-				} else if (writer != null) {
+				// 	writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "UTF-8"));
+				// 	continue;
+				// } 
+				else if (writer != null) {
 					writer.write(line);
 					writer.write(System.lineSeparator());
 				}
