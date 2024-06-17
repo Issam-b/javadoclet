@@ -117,7 +117,7 @@ public class MarkdownWriter {
 
 		lines.add(markdown(item) + ": " + defString);
 
-		breakElement();
+		// breakElement();
 	}
 
 	/**
@@ -157,13 +157,15 @@ public class MarkdownWriter {
 	 * @param str Javadoc format string
 	 * @return Markdown format string
 	 */
-	private String markdown(String str) {
+	public String markdown(String str) {
 		// Markdown conversion of Javadoc inline tags
 		str = Pattern.compile("<code>(.*?)</code>").matcher(str).replaceAll("`$1`");
 		str = Pattern.compile("<i>(.*?)</i>").matcher(str).replaceAll("_$1_");
 		str = Pattern.compile("<em>(.*?)</em>").matcher(str).replaceAll("_$1_");
-		str = Pattern.compile("<b>(.*?)</b>").matcher(str).replaceAll("__$1__");
-		str = Pattern.compile("<strong>(.*?)</strong>").matcher(str).replaceAll("__$1__");
+		// str = Pattern.compile("<b>(.*?)</b>").matcher(str).replaceAll("__$1__");
+		// str = Pattern.compile("<strong>(.*?)</strong>").matcher(str).replaceAll("__$1__");
+		str = Pattern.compile("<b>(.*?)</b>").matcher(str).replaceAll("$1");
+		str = Pattern.compile("<strong>(.*?)</strong>").matcher(str).replaceAll("$1");
 		str = Pattern.compile("<a href=\"(https?://.+?)\">(.+?)</a>").matcher(str).replaceAll("[$2]($1)");
 		str = Pattern.compile("\\{@link +([^,{}]+?) +([^,{}]+?)\\}").matcher(str).replaceAll("[$2]($1)");
 		str = Pattern.compile("\\{@link +(.+?)\\}").matcher(str).replaceAll("[$1]($1)");
@@ -208,7 +210,7 @@ public class MarkdownWriter {
 			for (String line : lines) {
 				if (line.startsWith("#class=")) {
 					String className = line.split("#class=")[1];
-					String outputFilename = outputDir + "/" + className + ".md";
+					String outputFilename = outputDir + "/" + className + ".java";
 
 					if (writer != null)
 						writer.close();
@@ -222,7 +224,7 @@ public class MarkdownWriter {
 					outputDir = apiDir + "/" + packageName;
 					new File(outputDir).mkdir();
 
-					String outputFilename = outputDir + "/package.md";
+					String outputFilename = outputDir + "/package.java";
 
 					if (writer != null)
 						writer.close();

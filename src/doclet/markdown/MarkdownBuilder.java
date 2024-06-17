@@ -59,7 +59,7 @@ public class MarkdownBuilder {
 	/**
 	 * Display string when no comment is specified
 	 */
-	private static final String NO_COMMENT = "[No description]";
+	private static final String NO_COMMENT = "No description";
 
 	/**
 	 * Generate documentation.
@@ -198,10 +198,13 @@ public class MarkdownBuilder {
 
 				// Package name
 				md.lines.add("#package=" +  packageDoc.name());
-				md.heading1(packageDoc.name() + " package");
-
+				
 				// Package description
-				print(getText(packageDoc.commentText(), NO_COMMENT));
+				md.lines.add("/*");
+				print(getText(packageDoc.commentText(), NO_COMMENT), false);
+				md.lines.add("*/");
+
+				md.lines.add("package " + packageDoc.name() + ";");
 
 				// Add to output package
 				packages.add(packageDoc);
@@ -217,22 +220,24 @@ public class MarkdownBuilder {
 
 			// class
 			md.lines.add("#class=" +  classDoc.name());
-			md.heading2(classDoc.modifiers() + " " + classType + " " + classDoc.name());
-
-			// class description
-			print(getText(classDoc.commentText(), NO_COMMENT));
 
 			// package name
-			md.heading3("Package");
-			md.unorderedList(classDoc.containingPackage().name());
-			md.breakElement();
+			md.lines.add("package " + classDoc.containingPackage().name() + ";");
+			md.lines.add("");
+			// md.heading3("Package");
+			// md.unorderedList(classDoc.containingPackage().name());
+			// md.breakElement();
+
+			// class description
+			md.lines.add("/*");
+			print(getText(classDoc.commentText(), NO_COMMENT).trim(), false);
 
 			// Source code file information
 			File source = classDoc.position().file();
 			CountInfo ci = Counter.count(source);
 			if (ci != null) {
-				md.heading3("File");
-				
+				md.breakElement();
+				md.lines.add("File");
 				String qtRepoPattern = "\\/(qt\\w+\\/src\\/.+)";
 				String classPath = "";
         		Matcher matcher = Pattern.compile(qtRepoPattern).matcher(source.getPath());
@@ -243,7 +248,7 @@ public class MarkdownBuilder {
 
 				// md.unorderedList(String.format("%s - %,d source code lines and %,d lines in total", classPath, ci.getSteps(), ci.getLines()));
 				md.unorderedList(classPath);
-				md.breakElement();
+				// md.lines.add("Class File: " + classPath);
 			}
 			counts.put(source, ci);
 
@@ -256,46 +261,50 @@ public class MarkdownBuilder {
 				d = d.superclass();
 			}
 			if (2 <= classDocs.size()) {
-				md.heading3("Inheritance Hierarchy");
+				md.breakElement();
+				md.lines.add("Inheritance Hierarchy");
 				Collections.reverse(classDocs);
 				for (int i = 0; i < classDocs.size(); i++) {
 					md.orderedList(classDocs.get(i).qualifiedName());
 				}
-				md.breakElement();
 			}
 
 			// interface
 			if (0 < classDoc.interfaces().length) {
-				md.heading3("Implemented Interfaces");
+				md.breakElement();
+				md.lines.add("Implemented Interfaces");
 				for (int i = 0; i < classDoc.interfaces().length; i++) {
 					md.unorderedList(classDoc.interfaces()[i].qualifiedName());
 				}
-				md.breakElement();
 			}
 
 			// version
 			Tag[] versionTags = classDoc.tags("version");
 			if (0 < versionTags.length) {
-				md.heading3("Version");
+				md.lines.add("Version");
 				for (int i = 0; i < versionTags.length; i++) {
 					md.unorderedList(versionTags[i].text());
 				}
-				md.breakElement();
+				// md.breakElement();
 			}
 
 			// Author
 			Tag[] authorTags = classDoc.tags("author");
 			if (0 < authorTags.length) {
-				md.heading3("Author");
+				md.lines.add("Author");
 				for (int i = 0; i < authorTags.length; i++) {
 					md.unorderedList(authorTags[i].text());
 				}
-				md.breakElement();
+				// md.breakElement();
 			}
+
+			md.lines.add("*/");
+			
+			md.lines.add(classDoc.modifiers() + " " + classType + " " + classDoc.name() + " {");
 
 			// all constants
 			if (0 < classDoc.enumConstants().length) {
-				md.heading4("Constant details");
+				// md.heading4("Constant details");
 				for (int i = 0; i < classDoc.enumConstants().length; i++) {
 					writeFieldDoc(classDoc.enumConstants()[i]);
 				}
@@ -303,7 +312,7 @@ public class MarkdownBuilder {
 
 			// all fields
 			if (0 < classDoc.fields().length) {
-				md.heading4("Field details");
+				// md.heading4("Field details");
 				for (int i = 0; i < classDoc.fields().length; i++) {
 					writeFieldDoc(classDoc.fields()[i]);
 				}
@@ -318,6 +327,8 @@ public class MarkdownBuilder {
 			for (int i = 0; i < classDoc.methods().length; i++) {
 				writeMemberDoc(classDoc.methods()[i]);
 			}
+
+			md.lines.add("}");
 		}
 	}
 
@@ -339,8 +350,12 @@ public class MarkdownBuilder {
 		}
 
 		// field information
-		md.heading5(doc.modifiers() + " " + getShortName(((FieldDoc) doc).type()) + " " + doc.name() + " " + fieldType);
-		print(getText(doc.commentText(), NO_COMMENT));
+		md.lines.add("");
+		md.lines.add("    /*");
+		String comment = getText(doc.commentText(), NO_COMMENT).replaceAll("(?m)^", "    ");
+		print(comment);
+		md.lines.add("    */");
+		md.lines.add("    " + doc.modifiers() + " " + getShortName(((FieldDoc) doc).type()) + " " + doc.name() + ";");
 	}
 
 	/**
@@ -349,22 +364,24 @@ public class MarkdownBuilder {
 	 * @param doc Executable member information
 	 */
 	private void writeMemberDoc(ExecutableMemberDoc doc) {
-		// Method information
-		String str = doc.modifiers();
-		if (doc instanceof MethodDoc) {
-			str += " " + getShortName(((MethodDoc) doc).returnType());
-		}
-		str += " " + doc.name() + "(" + getParamSignature(doc.parameters(), true) + ")";
-		md.heading4(str);
-		print(getText(doc.commentText(), NO_COMMENT));
+		md.lines.add("");
+		md.lines.add("    /*");
+		String comment = getText(doc.commentText(), NO_COMMENT).replaceAll("(?m)^", "    ");
+		print(comment);
 
+		boolean paramBreakAdded = false;
 		// parameters
 		Parameter[] parameters = doc.parameters();
 		if (0 < parameters.length) {
 			for (int i = 0; i < parameters.length; i++) {
 				String paramText = getText(getParamComment(doc.paramTags(), parameters[i].name()), "");
-				if (!paramText.isEmpty())
-					print("`" + getShortName(parameters[i].type()) + " " + parameters[i].name() + "`: " + paramText);
+				if (!paramText.isEmpty()) {
+					if (!paramBreakAdded)
+						md.breakElement();
+					paramBreakAdded = true;
+					print("    `" + getShortName(parameters[i].type()) + " " + parameters[i].name() + "`: " 
+								+ paramText, true, false);
+				}
 			}
 		}
 
@@ -372,7 +389,8 @@ public class MarkdownBuilder {
 		if (doc instanceof MethodDoc) {
 			MethodDoc method = (MethodDoc) doc;
 			if (0 < method.tags("return").length) {
-				print("__Returns__ " + method.tags("return")[0].text());
+				md.breakElement();
+				print("    Returns " + method.tags("return")[0].text(), true, false);
 			}
 		}
 
@@ -380,10 +398,20 @@ public class MarkdownBuilder {
 		Type[] exceptions = doc.thrownExceptionTypes();
 		if (0 < exceptions.length) {
 			for (int i = 0; i < exceptions.length; i++) {
-				md.definition("__Exception__ `" + getShortName(exceptions[i]) + "`",
-						getText(getThrowsComment(doc.throwsTags(), exceptions[i].typeName()), NO_COMMENT));
+				md.breakElement();
+				print("    Exception `" + getShortName(exceptions[i]) + "`: " +
+						getText(getThrowsComment(doc.throwsTags(), exceptions[i].typeName()), NO_COMMENT), true, false);
 			}
 		}
+		md.lines.add("    */");
+
+		// Method information
+		String str = doc.modifiers();
+		if (doc instanceof MethodDoc) {
+			str += " " + getShortName(((MethodDoc) doc).returnType());
+		}
+		str += " " + doc.name() + "(" + getParamSignature(doc.parameters(), true) + ");";
+		md.lines.add("    " + str);
 	}
 
 	/**
@@ -391,7 +419,7 @@ public class MarkdownBuilder {
 	 *
 	 * @param str Javadoc content
 	 */
-	private void print(String str) {
+	private void print(String str, boolean indent, boolean isMainComment) {
 
 		// Process each paragraph
 		String[] paragraphs = str.split("\\s*<(p|P)>\\s*");
@@ -400,19 +428,43 @@ public class MarkdownBuilder {
 			// Combining line breaks
 			paragraphs[i] = paragraphs[i].replaceAll("\\s*[\\r\\n]+\\s*", " ");
 
+			paragraphs[i] = md.markdown(paragraphs[i]);
+			
+			paragraphs[i] = paragraphs[i].replaceAll(" 1. ", "\n1. ");
+			paragraphs[i] = paragraphs[i].replaceAll("Note: ", "\nNote: ");
+
 			// Insert line break after each line
-			paragraphs[i] = paragraphs[i].replaceAll("\\.\\s+", ".\n");
-			paragraphs[i] = paragraphs[i].replaceAll("。\\s*", "。\n");
+			if (indent) {
+				if (isMainComment)
+					paragraphs[i] = paragraphs[i].replaceAll("(.{75,86}(?=\\s) )", "$1\n    ");
+				else
+					paragraphs[i] = paragraphs[i].replaceAll("(.{75,86}(?=\\s) )", "$1\n        ");
+			} else {
+				paragraphs[i] = paragraphs[i].replaceAll("(.{75,86}(?=\\s) )", "$1\n");
+			}
+
+			paragraphs[i] = paragraphs[i].replaceAll(" \n", "\n");
 
 			// Process every line break
 			String[] lines = paragraphs[i].split("\n");
+			Pattern regex = Pattern.compile("</ul>\\s*$");
 			for (int j = 0; j < lines.length; j++) {
-				md.line(lines[j]);
+				if (!regex.matcher(lines[j]).find())
+					md.line(lines[j]);
 			}
 
 			// Ending a Markdown element
-			md.breakElement();
+			if (i < paragraphs.length - 1)
+				md.breakElement();
 		}
+	}
+
+	private void print(String str, boolean indent) {
+		print(str, indent, true);
+	}
+
+	private void print(String str) {
+		print(str, true, true);
 	}
 
 	/**
@@ -426,7 +478,7 @@ public class MarkdownBuilder {
 		if (str == null || str.isEmpty()) {
 			return def;
 		}
-		return str.trim().replace("\n ", "\n");
+		return str.trim().replace("\n ", "\n").replaceAll("(\\n)+$", "");
 	}
 
 	/**
