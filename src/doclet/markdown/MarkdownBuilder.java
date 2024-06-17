@@ -59,7 +59,7 @@ public class MarkdownBuilder {
 	/**
 	 * Display string when no comment is specified
 	 */
-	private static final String NO_COMMENT = "No description";
+	private static final String NO_COMMENT = "Missing documentation";
 
 	/**
 	 * Generate documentation.
