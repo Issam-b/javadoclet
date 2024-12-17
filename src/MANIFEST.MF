@@ -1,1 +1,1 @@
-Main-Class: doclet.markdown.MarkdownDoclet
+Main-Class: org.qtproject.qt.api_review.ApiReviewDoclet

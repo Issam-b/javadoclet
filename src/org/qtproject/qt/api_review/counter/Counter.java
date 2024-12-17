@@ -1,4 +1,4 @@
-package doclet.counter;
+package org.qtproject.qt.api_review.counter;
 
 import java.io.BufferedReader;
 import java.io.File;

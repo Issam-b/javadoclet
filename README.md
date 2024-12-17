@@ -1,15 +1,14 @@
 # MarkdownDoclet
-Doclet which creates Javadoc as Markdown files for each class and package.
-Output of this doclet  is optimized for [Pandoc](http://pandoc.org/).
+Doclet which creates API changes for review as *.java files.
 
 ## How to use with javadoc
 
 ```bash
 javadoc -sourcepath src \
-    -doclet doclet.markdown.MarkdownDoclet \
-    -docletpath ~/Downloads/markdowndoclet-1.0.jar \
+    -doclet org.qtproject.qt.api_review.ApiReviewDoclet \
+    -docletpath ~/Downloads/api-review-doclet-1.0.jar \
     -title "Java API Docs" \
-    -output-dir api-docs.md \
+    -output-dir output-dir \
     -version "1.0" \
     -company "Author Name" \
     com.package.name
@@ -21,8 +20,8 @@ javadoc -sourcepath src \
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="javadoc">
   <target name="javadoc">
-    <javadoc access="private" additionalparam="-encoding utf-8" packagenames="doclet.markdown" sourcepath="src">
-      <doclet name="doclet.markdown.MarkdownDoclet" path="markdowndoclet-1.0.jar">
+    <javadoc access="private" additionalparam="-encoding utf-8" packagenames="org.qtproject.qt.api_review" sourcepath="src">
+      <doclet name="org.qtproject.qt.api_review.ApiReviewDoclet" path="api-review-doclet-1.0.jar">
         <param name="-file" value="document.md" />
         <param name="-title" value="SUBJECT" />
         <param name="-subtitle" value="SUBTITLE" />

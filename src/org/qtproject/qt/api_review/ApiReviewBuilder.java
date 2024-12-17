@@ -1,4 +1,4 @@
-package doclet.markdown;
+package org.qtproject.qt.api_review;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,13 +28,14 @@ import com.sun.javadoc.Tag;
 import com.sun.javadoc.ThrowsTag;
 import com.sun.javadoc.Type;
 
-import doclet.counter.CountInfo;
-import doclet.counter.Counter;
+import org.qtproject.qt.api_review.ApiReviewWriter;
+import org.qtproject.qt.api_review.counter.CountInfo;
+import org.qtproject.qt.api_review.counter.Counter;
 
 /**
  * Provides processing for creating Javadoc documents in Markdown format.
  */
-public class MarkdownBuilder {
+public class ApiReviewBuilder {
 
 	/**
 	 * Javadoc root document
@@ -44,7 +45,7 @@ public class MarkdownBuilder {
 	/**
 	 * Markdown output
 	 */
-	private MarkdownWriter md;
+	private ApiReviewWriter md;
 
 	/**
 	 * List for remembering output packages
@@ -73,7 +74,7 @@ public class MarkdownBuilder {
 		root = rootDoc;
 
 		// Initialize Markdown output
-		md = new MarkdownWriter();
+		md = new ApiReviewWriter();
 
 		// Create a cover
 		makeCoverPage();
@@ -198,7 +199,7 @@ public class MarkdownBuilder {
 
 				// Package name
 				md.lines.add("#package=" +  packageDoc.name());
-				
+
 				// Package description
 				md.lines.add("/*");
 				print(getText(packageDoc.commentText(), NO_COMMENT), false);
@@ -299,7 +300,7 @@ public class MarkdownBuilder {
 			}
 
 			md.lines.add("*/");
-			
+
 			md.lines.add(classDoc.modifiers() + " " + classType + " " + classDoc.name() + " {");
 
 			// all constants
@@ -379,7 +380,7 @@ public class MarkdownBuilder {
 					if (!paramBreakAdded)
 						md.breakElement();
 					paramBreakAdded = true;
-					print("    `" + getShortName(parameters[i].type()) + " " + parameters[i].name() + "`: " 
+					print("    `" + getShortName(parameters[i].type()) + " " + parameters[i].name() + "`: "
 								+ paramText, true, false);
 				}
 			}
@@ -429,7 +430,7 @@ public class MarkdownBuilder {
 			paragraphs[i] = paragraphs[i].replaceAll("\\s*[\\r\\n]+\\s*", " ");
 
 			paragraphs[i] = md.markdown(paragraphs[i]);
-			
+
 			paragraphs[i] = paragraphs[i].replaceAll(" 1. ", "\n1. ");
 			paragraphs[i] = paragraphs[i].replaceAll("Note: ", "\nNote: ");
 

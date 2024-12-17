@@ -1,4 +1,4 @@
-package doclet.counter;
+package org.qtproject.qt.api_review.counter;
 
 /**
  * This class holds step count results.

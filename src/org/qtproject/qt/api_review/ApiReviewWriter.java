@@ -1,4 +1,4 @@
-package doclet.markdown;
+package org.qtproject.qt.api_review;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 /**
  * Outputs data in Markdown format.
  */
-public class MarkdownWriter {
+public class ApiReviewWriter {
 
 	/**
 	 * Markdown output line information
@@ -218,9 +218,9 @@ public class MarkdownWriter {
 					writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "UTF-8"));
 					hasApiChanges = true;
 					continue;
-				} else if (line.startsWith("#package=")) { 
+				} else if (line.startsWith("#package=")) {
 					packageName = line.split("#package=")[1];
-					
+
 					outputDir = apiDir + "/" + packageName;
 					new File(outputDir).mkdir();
 
@@ -232,7 +232,7 @@ public class MarkdownWriter {
 					writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "UTF-8"));
 					hasApiChanges = true;
 					continue;
-				} else if (line.startsWith("#statistics-section") && hasApiChanges) { 
+				} else if (line.startsWith("#statistics-section") && hasApiChanges) {
 					outputDir = apiDir;
 					String outputFilename = outputDir + "/code-statistics.md";
 
@@ -243,7 +243,7 @@ public class MarkdownWriter {
 						writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "UTF-8"));
 					else
 						writer = null;
-					
+
 					continue;
 				} else if (writer != null) {
 					writer.write(line);

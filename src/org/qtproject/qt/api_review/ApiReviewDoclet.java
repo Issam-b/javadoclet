@@ -1,4 +1,4 @@
-package doclet.markdown;
+package org.qtproject.qt.api_review;
 
 import com.sun.javadoc.Doclet;
 import com.sun.javadoc.LanguageVersion;
@@ -7,19 +7,19 @@ import com.sun.javadoc.RootDoc;
 /**
  * A doclet that creates Javadoc documents in Markdown format.
  */
-public class MarkdownDoclet extends Doclet {
+public class ApiReviewDoclet extends Doclet {
 
 	/**
 	 * Executes Javadoc generation processing.
 	 * <p>
-	 * When executed, Javadoc information is generated as a Markdown file. 
+	 * When executed, Javadoc information is generated as a Markdown file.
 	 * If a file with the same name already exists, it will be overwritten.
 	 *
 	 * @param rootDoc Javadoc root document
 	 * @return Returns the execution result as a boolean value.
 	 */
 	public static boolean start(RootDoc rootDoc) {
-		MarkdownBuilder creator = new MarkdownBuilder();
+		ApiReviewBuilder creator = new ApiReviewBuilder();
 		try {
 			Options.options = rootDoc.options();
 			creator.create(rootDoc);

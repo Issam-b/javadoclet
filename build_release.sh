@@ -4,7 +4,7 @@ VERSION="1.0"
 
 build_markdown_doclet_jar() {
     find src -name "*.java" -exec javac -d build -source 8 -target 8 {} +
-    jar cfm markdowndoclet-$VERSION.jar src/MANIFEST.MF -C build doclet
+    jar cfm api-review-doclet-$VERSION.jar src/MANIFEST.MF -C build org
     rm -R build
 }
 
